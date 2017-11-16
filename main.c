@@ -42,6 +42,7 @@ void	init_map(t_filler *data)
 		tmp.map[i] = malloc(sizeof(int) * tmp.dim.x);
 		tmp.heatmap[i] = malloc(sizeof(int) * tmp.dim.x);
 	}
+	tmp.piece_val = -1;
 	data->board = tmp;
 }
 
@@ -51,7 +52,9 @@ void	set_player(t_filler *data)
 	char *start;
 
 	line = NULL;
+	dprintf(data->fd, "check0\n");
 	get_next_line(STDIN_FILENO, &line);
+	dprintf(data->fd, "check\n");
 	start = line;
 	while (*line && *line != 'p')
 		line++;
@@ -59,6 +62,61 @@ void	set_player(t_filler *data)
 	data->me = *line == '1' ? 'O' : 'X';
 	data->opp = *line == '1' ? 'X' : 'O';
 	ft_strdel(&start);
+}
+
+int		check_piece(t_filler *data, t_xy *pt)
+{
+	t_xy	st;
+	int		val;
+	int		touch;
+
+	val = 0;
+	touch = 0;
+	st.y = -1;
+	while (++st.y < data->tok.psize.y)
+	{
+		st.x = -1;
+		while (++st.x < data->tok.psize.x)
+		{
+			if (data->tok.piece[st.y + data->tok.st.y][st.x + data->tok.st.x] == 1)
+			{
+				if (pt->x + st.x >= data->board.dim.x ||
+						pt->y + st.y >= data->board.dim.y ||
+						data->board.heatmap[pt->y + st.y][pt->x + st.x] < 0)
+					return (-1);
+				if (data->board.map[pt->y + st.y][pt->x + st.x] == 0)
+					touch++;
+				val += data->board.heatmap[pt->y + st.y][pt->x + st.x];
+			}
+		}
+	}
+	if (touch != 1)
+		return (-1);
+	return (val);
+}
+
+void	place_piece(t_filler *data)
+{
+	t_xy	pt;
+	int		val;
+
+	pt.y = -1;
+	while (++pt.y < data->board.dim.y)
+	{
+		pt.x = -1;
+		while (++pt.x < data->board.dim.x)
+		{
+			if ((val = check_piece(data, &pt)) > data->board.piece_val)
+			{
+				data->board.piece_val = val;
+				data->board.place.x = pt.x;
+				data->board.place.y = pt.y;
+			}
+		}
+	}
+	if (data->board.piece_val > -1)
+		printf("%d %d\n", data->board.place.y, data->board.place.x);
+	dprintf(data->fd, "%d %d with val = %d\n", data->board.place.y, data->board.place.x, data->board.piece_val);
 }
 
 void	print_placement(t_filler *s)
@@ -86,9 +144,9 @@ void	print_placement(t_filler *s)
 			// 	pc.x++;
 			// }
 			// else
-				printf("%04d ", s->board.heatmap[i][j]);
+				dprintf(s->fd, "%04d ", s->board.heatmap[i][j]);
 		}
-		printf("\n");
+		dprintf(s->fd, "\n");
 		// if (pc.x != s->tok.st.x)
 		// {
 		// 	printf("\t");
@@ -105,10 +163,16 @@ int		main(void)
 	char *line;
 	t_filler data;
 
-	ft_bzero(&data, sizeof(data));
+	data.fd = open("./error_debug", O_CREAT | O_WRONLY | O_TRUNC);
+	// dprintf(data.fd, "my dude\n");
+	// ft_bzero(&data, sizeof(data));
+	dprintf(data.fd, "boiiii\n");
 	set_player(&data);
+	dprintf(data.fd, "me: %c, opp: %c\n", data.me, data.opp);
 	init_map(&data);
+	dprintf(data.fd, "map init: %d by %d\n", data.board.dim.x, data.board.dim.y);
 	init_heatmaps(&data);
+	dprintf(data.fd, "heatmap init\n");
 	// data = init_filler();
 	line = NULL;
 	while (get_next_line(STDIN_FILENO, &line) > 0)
@@ -117,21 +181,13 @@ int		main(void)
 			continue ;
 		ft_strdel(&line);
 		read_map(&data);
+		dprintf(data.fd, "read map done\n");
 		init_token(&data);
+		dprintf(data.fd, "read token done\n");
 		multithread(&data);
-		// place_piece(&data);
+		dprintf(data.fd, "made heatmaps\n");
+		place_piece(&data);
+		dprintf(data.fd, "piece placed\n");
 		print_placement(&data);
 	}
-	// if (!ft_strncmp(line, "$$$", 3))
-	// {
-	// 	set_player(&data, line);
-	// 	free(line);
-	// 	line = NULL;
-	// }
-	// init_map(&data, line);
-	// read_map(&data);
-	// get_piece(&data);
-	// set_heatmap(&data);
-
-	// place_piece(&data);
 }

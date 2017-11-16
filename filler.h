@@ -1,5 +1,8 @@
 #include "./libft/libft.h"
 #include <limits.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 # define MAXHEAT 5000
 # define THREAD_CT 1
@@ -42,6 +45,7 @@ typedef struct	s_filler
 {
 	char		me;
 	char		opp;
+	int			fd;
 	t_map		board;
 	t_token		tok;
 	t_thread	heatmap[THREAD_CT];

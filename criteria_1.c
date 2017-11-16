@@ -1,9 +1,9 @@
 #include "filler.h"
 
-int		wall_dist(t_thread *m, t_xy pt)
-{
-	
-}
+// int		wall_dist(t_thread *m, t_xy pt)
+// {
+//
+// }
 
 int		enemy_dist(t_thread *m, t_xy pt)
 {
