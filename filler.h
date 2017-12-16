@@ -16,6 +16,7 @@ typedef struct	s_xy
 typedef struct	s_token
 {
 	int			**piece;
+	char		*piece_c;
 	t_xy		dim;
 	t_xy		st;
 	t_xy		end;
@@ -26,6 +27,13 @@ typedef struct	s_map
 {
 	int			**map;
 	int			**heatmap;
+	int			*heat_2;
+	char		*map_c;
+	int			plateau_len;
+	int			final_pt;
+	t_xy		st;
+	t_xy		end;
+	t_xy		msize;
 	t_xy		dim;
 	t_xy		place;
 	int			piece_val;
@@ -43,11 +51,13 @@ typedef struct	s_thread
 
 typedef struct	s_filler
 {
+	int			done;
+	int			first;
 	char		me;
 	char		opp;
 	int			fd;
-	t_map		board;
-	t_token		tok;
+	t_map		*board;
+	t_token		*tok;
 	t_thread	heatmap[THREAD_CT];
 }				t_filler;
 
@@ -64,4 +74,6 @@ void			multithread(t_filler *q);
 void			*set_thread(void *arg);
 void			set_heatmap(t_thread *board);
 
-int				enemy_dist(t_thread *m, t_xy pt);
+// int				enemy_dist(t_thread *m, t_xy pt);
+
+// int		gnl_test(const int fd, char **line, int fdout);
