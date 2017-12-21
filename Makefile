@@ -5,9 +5,9 @@ FLAGS := -Wall -Werror -Wextra
 LIBS := libft/libft.a
 
 SRC_FILES :=	main.c			\
-				read_filler.c	\
-				multithread.c	\
-				criteria_1.c
+				parse_map.c		\
+				parse_piece.c	\
+				placement.c
 
 SRCS := $(addprefix ./, $(SRC_FILES))
 
