@@ -22,18 +22,18 @@
 # define BUFF_SIZE 128
 # define MAX_FD 4096
 
+typedef struct		s_xy
+{
+	int				x;
+	int				y;
+}					t_xy;
+
 typedef struct		s_list
 {
 	void			*content;
 	size_t			content_size;
 	struct s_list	*next;
 }					t_list;
-
-enum
-{
-	false,
-	true
-};
 
 int					ft_atoi(const char *str);
 int					ft_toupper(int c);

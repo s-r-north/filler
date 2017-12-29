@@ -9,7 +9,7 @@ SRC_FILES :=	main.c			\
 				parse_piece.c	\
 				placement.c
 
-SRCS := $(addprefix ./, $(SRC_FILES))
+SRCS := $(addprefix ./src/, $(SRC_FILES))
 
 OBJS := $(SRCS:.c=.o)
 
