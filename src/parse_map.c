@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "./filler.h"
+#include "../filler.h"
 
 static t_map	*init_map(char *line)
 {

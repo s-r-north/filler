@@ -1,4 +1,4 @@
-NAME := filler
+NAME := snorth.filler
 
 FLAGS := -Wall -Werror -Wextra
 
@@ -22,7 +22,7 @@ all: $(NAME)
 $(NAME):
 	@echo "compiling libft..."
 	@make -C libft/
-	@gcc $(FLAGS) $(SRCS) -I$(INC) $(LIBS) -o $(NAME)
+	@gcc $(FLAGS) $(SRCS) -I$(INC) $(LIBS) -o $@
 	@echo "Done!"
 
 clean:

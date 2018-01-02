@@ -107,4 +107,8 @@ void				ft_lstadd(t_list **alst, t_list *new);
 void				ft_lstiter(t_list *lst, void (*f)(t_list *elem));
 t_list				*ft_lstmap(t_list *lst, t_list *(*f)(t_list *elem));
 
+int					ft_printf(const char *fmt, ...);
+int					ft_asprintf(char **strp, const char *fmt, ...);
+int					ft_vasprintf(char **strp, const char *fmt, va_list ap);
+
 #endif

@@ -10,33 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "./filler.h"
-
-static int	enemy_dist(t_map *m, int x, int y)
-{
-	int max;
-	int dist;
-	int st;
-
-	dist = -1;
-	max = (m->dim.y > m->dim.x) ? m->dim.y : m->dim.x;
-	while (++dist < max)
-	{
-		st = x - dist - 1;
-		while (++st <= x + dist)
-			if (st >= 0 && st < m->dim.x && ((y - dist >= 0 &&
-					m->heat[m->dim.x * (y - dist) + st] == -1) || (y + dist <
-					m->dim.y && m->heat[m->dim.x * (y + dist) + st] == -1)))
-				return (dist == 0 ? -1 : MAXHEAT / (1.1 * dist));
-		st = y - dist;
-		while (++st < y + dist)
-			if (st >= 0 && st < m->dim.y && ((x - dist >= 0 &&
-					m->heat[m->dim.x * st + x - dist] == -1) || (x + dist <
-					m->dim.x && m->heat[m->dim.x * st + x + dist] == -1)))
-				return (dist == 0 ? -1 : MAXHEAT / (1.1 * dist));
-	}
-	return (-1);
-}
+#include "../filler.h"
 
 static int	good_point(t_filler *f, t_xy pt, t_xy st, int *touch)
 {
@@ -50,9 +24,6 @@ static int	good_point(t_filler *f, t_xy pt, t_xy st, int *touch)
 	if (f->map->board[((pt.y + st.y) * f->map->dim.x) + pt.x + st.x] == f->me
 			&& ++(*touch) > 1)
 		return (-1);
-	if (f->map->heat[((pt.y + st.y) * f->map->dim.x) + pt.x + st.x] == 0)
-		f->map->heat[((pt.y + st.y) * f->map->dim.x) + pt.x + st.x] =
-				enemy_dist(f->map, pt.x, pt.y);
 	return (f->map->heat[((pt.y + st.y) * f->map->dim.x) + pt.x + st.x]);
 }
 
@@ -83,12 +54,43 @@ static int	check_piece(t_filler *f, t_xy pt)
 	return (val);
 }
 
-static void	print_piece(int x, int y)
+static int	opp_dist(t_map *m, int x, int y)
 {
-	ft_putnbr(y);
-	ft_putchar(' ');
-	ft_putnbr(x);
-	ft_putchar('\n');
+	int max;
+	int dist;
+	int st;
+
+	dist = 0;
+	max = (m->dim.y > m->dim.x) ? m->dim.y : m->dim.x;
+	while (dist < max)
+	{
+		st = x - dist - 1;
+		while (++st <= x + dist)
+			if (st >= 0 && st < m->dim.x && ((y - dist >= 0 &&
+					m->heat[m->dim.x * (y - dist) + st] == -1) || (y + dist <
+					m->dim.y && m->heat[m->dim.x * (y + dist) + st] == -1)))
+				return (dist == 0 ? -1 : MAXHEAT / (1.1 * dist));
+		st = y - dist;
+		while (++st < y + dist)
+			if (st >= 0 && st < m->dim.y && ((x - dist >= 0 &&
+					m->heat[m->dim.x * st + x - dist] == -1) || (x + dist <
+					m->dim.x && m->heat[m->dim.x * st + x + dist] == -1)))
+				return (dist == 0 ? -1 : MAXHEAT / (1.1 * dist));
+		dist++;
+	}
+	return (-1);
+}
+
+static void	populate_heatmap(t_map *map)
+{
+	int i;
+
+	i = 0;
+	while (i < map->final_pt)
+	{
+		map->heat[i] = opp_dist(map, i % map->dim.x, i / map->dim.x);
+		i++;
+	}
 }
 
 void		placement(t_filler *f)
@@ -96,6 +98,7 @@ void		placement(t_filler *f)
 	t_xy	i;
 	int		val;
 
+	populate_heatmap(f->map);
 	i.y = (f->map->st.y - f->tok->psize.y - 1 < 0) ?
 			0 : f->map->st.y - f->tok->psize.y - 1;
 	while (i.y < f->map->end.y)
@@ -114,7 +117,7 @@ void		placement(t_filler *f)
 		}
 		i.y++;
 	}
-	print_piece(f->map->place.x, f->map->place.y);
+	ft_printf("%d %d\n", f->map->place.y, f->map->place.x);
 	if (f->map->piece_val < 0)
 		f->done = 69;
 }

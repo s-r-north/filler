@@ -6,17 +6,16 @@
 #    By: snorth <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/03/01 15:55:43 by snorth            #+#    #+#              #
-#    Updated: 2017/03/13 21:24:10 by snorth           ###   ########.fr        #
+#    Updated: 2018/01/02 15:07:14 by snorth           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME =		libft.a
 
-HEADER =	libft.h
+CC =		gcc
+CFLAGS +=	-Wall -Wextra -Werror
 
-CFLAGS =	-c -Wall -Wextra -Werror
-
-CFILES =	ft_memset.c		ft_bzero.c		ft_memcpy.c		\
+CFILES :=	ft_memset.c		ft_bzero.c		ft_memcpy.c		\
 			ft_memccpy.c	ft_memmove.c	ft_memchr.c		\
 			ft_memcmp.c		ft_strlen.c		ft_strdup.c		\
 			ft_strcpy.c		ft_strncpy.c	ft_strcat.c		\
@@ -39,21 +38,37 @@ CFILES =	ft_memset.c		ft_bzero.c		ft_memcpy.c		\
 			ft_lstadd.c		ft_lstiter.c	ft_lstmap.c		\
 			ft_fmod.c		ft_realloc.c	get_next_line.c
 
-OFILES =	$(CFILES:.c=.o)
+PF_FILES :=	ft_printf.c		\
+			pf_eval_fmt.c	\
+			pf_conversions.c\
+			printf_tools.c	\
+			printf_ints.c	\
+			ft_imaxtoa.c
 
-CC =		gcc
+FT_PRINTF :=	$(addprefix ft_printf/, $(PF_FILES))
+
+HEADER =	libft.h
+PFHEADER =	./ft_printf/ft_printf.h
+
+OFILES =	$(CFILES:.c=.o)
+PF_OBJ =	$(FT_PRINTF:.c=.o)
 
 .PHONY: clean fclean re
 
 all: $(NAME)
 
-$(NAME):
-	@$(CC) $(CFLAGS) $(CFILES) -I $(HEADER)
-	@ar rc $(NAME) $(OFILES)
+$(OFILES): %.o: %.c
+	@$(CC) $(CFLAGS) -I $(HEADER) -c $< -o $@
+
+$(PF_OBJ): %.o: %.c
+	@$(CC) $(CFLAGS) -I $(PFHEADER) -c $< -o $@
+
+$(NAME): $(OFILES) $(PF_OBJ)
+	@ar rc $(NAME) $(OFILES) $(PF_OBJ)
 	@ranlib $(NAME)
 
 clean:
-	@/bin/rm -rf $(OFILES)
+	@/bin/rm -rf $(OFILES) $(PF_OBJ)
 
 fclean: clean
 	@/bin/rm -f $(NAME)

@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "./filler.h"
+#include "../filler.h"
 
 void	get_player(t_filler *f)
 {
@@ -32,6 +32,10 @@ void	clean_everything(t_filler *f)
 	f->map->place.x = 0;
 	f->map->place.y = 0;
 	f->map->piece_val = -1;
+	f->map->st.x = f->map->dim.x + 1;
+	f->map->st.y = f->map->dim.y + 1;
+	f->map->end.x = -1;
+	f->map->end.y = -1;
 	ft_bzero(f->tok->piece, f->tok->dim.x * f->tok->dim.y);
 	ft_memdel((void**)&f->tok->piece);
 	ft_bzero(f->tok, sizeof(t_token));
